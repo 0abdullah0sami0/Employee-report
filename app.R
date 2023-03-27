@@ -8,43 +8,56 @@
 #
 
 library(shiny)
+library(vembedr)
+library(readxl)
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
-    )
-)
-
+ui <- navbarPage("Employee report",
+                 tabPanel("Service description",
+                          
+                 column(width = 12,align = "center",
+                        
+                 fluidRow(downloadButton("id1","Download Excel file")),
+                 br(),
+                 fluidRow(embed_url("https://www.youtube.com/watch?v=-IBxIXBaei8")))),
+                 
+                 tabPanel("Dashboard",
+                 
+                 column(width = 12,align = "center",
+                 
+                 fluidRow(fileInput("id2", "Upload",accept = ".xlsm")),
+                 br(),
+                 fluidRow(
+                 column(width = 4,plotOutput("plot1")),
+                 column(width = 4,plotOutput("plot2")),
+                 column(width = 4,plotOutput("plot3"))),
+                 
+                 fluidRow(
+                 column(width = 6,plotOutput("plot4")),
+                 column(width = 6,plotOutput("plot5")))
+                 
+                 )))
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
-    })
+  
+  output$id1 <- downloadHandler(
+                filename = function() {
+                "My data.xlsm"},
+                content = function(My_data){
+                file.copy("My data.xlsm",My_data)}
+                )
+  
+  observeEvent(input$id2,{
+                print(input$id2)
+                datae <- read_excel(input$id2$datapath,skip = 11,range = "B12:C212")
+                data2 <- read_excel(input$id2$datapath,skip = 11,range = "XFA12:XFB212")
+                print(datae)
+                print(data2)
+                })
+  
+  output$plot1 <- renderPlot({
+    
+  })
 }
 
 # Run the application 
