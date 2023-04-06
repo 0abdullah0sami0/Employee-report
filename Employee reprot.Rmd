@@ -1,0 +1,42 @@
+---
+title: "employee report"
+author: "abdullah sami"
+date: "2023-04-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+```{r}
+ datae <- read_excel("My data.xlsm",range = "B12:C212")
+ data2 <- read_excel("My data.xlsm",range = "XFA12:XFB212")
+```
+
+```{r}
+df <- cbind(datae,data2)
+```
+
+```{r}
+summary(df)
+```
+
+```{r}
+df %>%
+group_by(`situation‏`) %>%
+summarise(countAF = n()) %>%
+                
+ggplot(aes(x = `situation‏`, y = countAF)) +
+geom_bar(stat = "identity")
+```
+
+```{r}
+df$`type of process`
+```
+

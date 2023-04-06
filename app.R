@@ -10,6 +10,7 @@
 library(shiny)
 library(vembedr)
 library(readxl)
+library(tidyverse)
 
 # Define UI for application that draws a histogram
 ui <- navbarPage("Employee report",
@@ -40,24 +41,78 @@ ui <- navbarPage("Employee report",
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
+  df <- reactiveVal("AN")
+  
   output$id1 <- downloadHandler(
                 filename = function() {
-                "My data.xlsm"},
+                  
+                paste0("My data ", Sys.Date(), ".xlsm")},
+                
                 content = function(My_data){
                 file.copy("My data.xlsm",My_data)}
                 )
   
   observeEvent(input$id2,{
                 print(input$id2)
-                datae <- read_excel(input$id2$datapath,skip = 11,range = "B12:C212")
-                data2 <- read_excel(input$id2$datapath,skip = 11,range = "XFA12:XFB212")
+                datae <- read_excel(input$id2$datapath,range = "B12:C212")
+                data2 <- read_excel(input$id2$datapath,range = "XFA12:XFB212")
                 print(datae)
                 print(data2)
+                print(cbind(datae,data2))
+                df(cbind(datae,data2))
+                print(names(df()))
+                
+                output$plot1 <- renderPlot({
+                    df() %>%
+                    filter(!is.na(`situation‏`)) %>%
+                    group_by(`situation‏`) %>%
+                    summarise(countAF = n()) %>%
+                    
+                    ggplot(aes(x = `situation‏`, y = countAF, fill = `situation‏`)) +
+                    geom_bar(stat = "identity")
                 })
-  
-  output$plot1 <- renderPlot({
-    
-  })
+                
+                output$plot2 <- renderPlot({
+                    df() %>%
+                    filter(!is.na(`situation‏`)) %>%
+                    group_by(`type of process`,`situation‏`) %>%
+                    summarise(countALL = n()) %>%
+                    
+                    ggplot(aes(x = `type of process`, y = countALL, fill = `situation‏`)) +
+                    geom_bar(stat = "identity")
+                })
+                
+                output$plot3 <- renderPlot({
+                  df() %>%
+                    filter(!is.na(`situation‏`)) %>%
+                    group_by(`type of process`,`situation‏`) %>%
+                    summarise(countALL = n()) %>%
+                    
+                    ggplot(aes(x = `type of process`, y = countALL, fill = `situation‏`)) +
+                    geom_bar(stat = "identity")
+                })
+                
+                output$plot4 <- renderPlot({
+                  df() %>%
+                    filter(!is.na(`situation‏`)) %>%
+                    group_by(`type of process`,`situation‏`) %>%
+                    summarise(countALL = n()) %>%
+                    
+                    ggplot(aes(x = `type of process`, y = countALL, fill = `situation‏`)) +
+                    geom_bar(stat = "identity")
+                })
+                
+                output$plot5 <- renderPlot({
+                  df() %>%
+                    filter(!is.na(`situation‏`)) %>%
+                    group_by(`type of process`,`situation‏`) %>%
+                    summarise(countALL = n()) %>%
+                    
+                    ggplot(aes(x = `type of process`, y = countALL, fill = `situation‏`)) +
+                    geom_bar(stat = "identity")
+                })
+                  
+                })
 }
 
 # Run the application 
